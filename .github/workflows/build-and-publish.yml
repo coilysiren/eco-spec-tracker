@@ -41,13 +41,10 @@ jobs:
     needs: build-publish
     steps:
       - uses: actions/checkout@v4
-      # Tailscale SSH into kai-server and apply the rendered manifest there.
-      # We used to run kubectl straight from the runner against a cluster
-      # endpoint exposed over the tailnet, but the k3s API only binds to
-      # localhost on kai-server, so the remote kubectl path always timed
-      # out. SSH-piping the manifest and letting kai-server's own kubectl
-      # do the apply matches the manual deploy flow that's been working
-      # all along.
+      # The action auths with an ephemeral authkey and brings tailscale up.
+      # A second `sudo tailscale up` to advertise flags would try to reauth
+      # without a key and hang; push the flags into the action's inputs
+      # instead. Hostname is per-run to avoid machine-key collisions.
       - uses: tailscale/github-action@v3
         with:
           oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
@@ -55,4 +52,32 @@ jobs:
           tags: tag:ci
           args: --accept-dns --accept-routes
           hostname: github-actions-${{ github.run_id }}
-      - run: make .deploy-ssh
+      - name: kubectl
+        run: |
+          curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+          sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
+      - name: kubeconfig
+        run: |
+          mkdir -p ~/.kube
+          cat <<EOF > ~/.kube/config
+          apiVersion: v1
+          kind: Config
+          clusters:
+          - name: default
+            cluster:
+              server: ${{ secrets.K8S_SERVER }}
+              certificate-authority-data: ${{ secrets.K8S_CA_DATA }}
+          contexts:
+          - name: default
+            context:
+              cluster: default
+              user: default
+          current-context: default
+          preferences: {}
+          users:
+          - name: default
+            user:
+              client-certificate-data: ${{ secrets.K8S_CLIENT_CERT_DATA }}
+              client-key-data: ${{ secrets.K8S_CLIENT_KEY_DATA }}
+          EOF
+      - run: make .deploy
