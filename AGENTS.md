@@ -77,8 +77,12 @@ The community mod `eco-price-calculator` (mod.io) is a known example of a mod th
 | `infrastructure` | public | k3s cluster config, Traefik, cert-manager. |
 | `kai-server` | public | Homelab k3s box (`kai@kai-server`, Tailscale `100.69.164.66`). |
 
+## Reaching the homelab
+
+`tailscale up && ssh kai@kai-server` gets you into the k3s host. The GitHub Actions `deploy` job does the same thing (tailscale up → kubeconfig → `make .deploy`). For ad-hoc mod drops, `scp mod/src/bin/Release/net10.0/EcoJobsTracker.dll kai@kai-server:<eco-server-mods-dir>/` followed by a server restart is the expected path; the exact destination directory on kai-server is still TBD.
+
 ## Open questions
 
-- How does the compiled mod reach the running Eco server? (scp? volume mount? manual deploy?)
-- API-key provisioning for the mod endpoint.
+- Exact Eco server install path on kai-server (for the mod-DLL scp destination).
+- API-key provisioning for the mod endpoint (once we move off mock data).
 - Whether "active" means "online right now" or "logged in within N days" — currently a mock boolean.
