@@ -15,8 +15,9 @@ mod on your server and it switches over transparently.
 
 ## Screenshot
 
-_TODO: drop a PNG/GIF of the rendered page here once the live deploy is
-serving real mod data._
+[![eco-jobs-tracker](docs/screenshot.png)](https://eco-jobs-tracker.coilysiren.me/)
+
+Live at [eco-jobs-tracker.coilysiren.me](https://eco-jobs-tracker.coilysiren.me/).
 
 ## What it renders
 

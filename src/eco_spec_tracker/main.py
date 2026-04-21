@@ -59,17 +59,21 @@ def healthz() -> JSONResponse:
 
 
 # eco-mcp-app's card.html bakes in a "Try this card on another public Eco
-# server" pill strip that makes sense in its own /preview UI but not here —
-# we're a jobs tracker for one specific server, not a card-renderer. Strip
-# the block out of the rendered HTML.
+# server" pill strip and a "© Kai Siren · view source" credits line. The
+# try-others pills belong in eco-mcp-app's /preview UI, not a jobs tracker
+# pinned to one server; the credits line duplicates our own outer footer.
+# Strip both blocks out of the rendered card HTML.
 _TRY_OTHERS_RE = re.compile(r'<div class="try-others">.*?</div>\s*</div>', flags=re.DOTALL)
+_CREDITS_LINE_RE = re.compile(r'<div class="credits-line">.*?</div>', flags=re.DOTALL)
 
 
 @app.get("/partials/eco-card", response_class=HTMLResponse)
 async def partial_eco_card() -> HTMLResponse:
     """Live Eco server status card, rendered by eco-mcp-app."""
     html = await render_status_html()
-    return HTMLResponse(_TRY_OTHERS_RE.sub("", html))
+    html = _TRY_OTHERS_RE.sub("", html)
+    html = _CREDITS_LINE_RE.sub("", html)
+    return HTMLResponse(html)
 
 
 @app.get("/", response_class=HTMLResponse)
