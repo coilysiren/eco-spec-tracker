@@ -1,0 +1,16 @@
+<ul class="profession-grid">
+  {% for s in stats %}
+    <li class="profession-card {% if s.total == 0 %}empty{% endif %}">
+      <button
+        class="profession-header"
+        hx-get="/partials/profession/{{ s.profession }}"
+        hx-target="#detail-{{ loop.index }}"
+        hx-swap="innerHTML"
+      >
+        <span class="name">{{ s.profession }}</span>
+        <span class="count">( {{ s.active }} / {{ s.total }} )</span>
+      </button>
+      <div id="detail-{{ loop.index }}" class="profession-detail"></div>
+    </li>
+  {% endfor %}
+</ul>

@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}eco-jobs-tracker{% endblock %}</title>
+  <script src="https://unpkg.com/htmx.org@2.0.3"></script>
+  <link rel="stylesheet" href="/static/app.css">
+</head>
+<body>
+  <header class="topbar">
+    <h1><a href="/">eco-jobs-tracker</a></h1>
+    <nav>
+      <a href="/">Professions</a>
+      <a href="/players">Players</a>
+      <a href="/api/v1/professions">JSON</a>
+    </nav>
+  </header>
+  <main>
+    {% block content %}{% endblock %}
+  </main>
+  <footer>
+    <small>mock data — will be replaced by Eco mod live feed</small>
+  </footer>
+</body>
+</html>

@@ -1,0 +1,9 @@
+{% if stat.players %}
+  <ul class="player-list">
+    {% for p in stat.players %}
+      <li>{{ p }}</li>
+    {% endfor %}
+  </ul>
+{% else %}
+  <p class="muted">No players with specialties in this profession.</p>
+{% endif %}

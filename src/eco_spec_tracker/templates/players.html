@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}Players — eco-jobs-tracker{% endblock %}
+{% block content %}
+  <h2>Players</h2>
+  <ul class="player-grid">
+    {% for p in players %}
+      <li class="player-card {% if not p.active %}inactive{% endif %}">
+        <h3>
+          {{ p.name }}
+          <span class="badge">{{ "active" if p.active else "inactive" }}</span>
+        </h3>
+        <ul class="specialty-list">
+          {% for s in p.specialties %}
+            <li>
+              <span class="spec-name">{{ s.specialty }}</span>
+              <span class="spec-level">lvl {{ s.level }}</span>
+            </li>
+          {% endfor %}
+        </ul>
+      </li>
+    {% endfor %}
+  </ul>
+{% endblock %}

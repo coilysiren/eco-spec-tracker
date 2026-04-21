@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}Professions — eco-jobs-tracker{% endblock %}
+{% block content %}
+  <section class="summary">
+    <p><strong>{{ total_players }}</strong> players tracked</p>
+    <button
+      class="refresh"
+      hx-get="/partials/professions"
+      hx-target="#professions"
+      hx-swap="innerHTML"
+    >Refresh</button>
+  </section>
+
+  <div id="professions">
+    {% include "_professions.html" %}
+  </div>
+{% endblock %}
