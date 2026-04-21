@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}professions ⇒ players{% endblock %}
+{% block content %}
+  <h2 class="mb-4 text-xl font-semibold">[ professions ⇒ players ]</h2>
+  <table class="w-full border-collapse text-sm">
+    <thead>
+      <tr class="border-b border-slate-700 text-left text-[11px] uppercase tracking-wide text-slate-400">
+        <th class="py-2 pr-4 font-medium">Profession</th>
+        <th class="py-2 pr-4 font-medium">Active / Total</th>
+        <th class="py-2 font-medium">Players</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for r in rows %}
+        <tr class="border-b border-slate-800 {% if r.total == 0 %}opacity-40{% endif %}">
+          <td class="py-2 pr-4 font-medium">{{ r.profession }}</td>
+          <td class="py-2 pr-4 tabular-nums text-accent">{{ r.active }} / {{ r.total }}</td>
+          <td class="py-2">{{ r.players | join(", ") if r.players else "—" }}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}

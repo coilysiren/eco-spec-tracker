@@ -20,6 +20,7 @@ Pairs nicely with ``uvicorn --reload``:
 
 from __future__ import annotations
 
+import asyncio
 import os
 from pathlib import Path
 
@@ -40,18 +41,43 @@ router = APIRouter()
 
 @router.websocket("/ws/livereload")
 async def livereload(ws: WebSocket) -> None:
+    """Push ``reload`` / ``css`` on file changes; let uvicorn shut us down cleanly.
+
+    The naive ``async for _ in awatch(...)`` blocks forever, which wedges
+    uvicorn --reload during restarts (it waits on background tasks). Instead
+    we run two tasks in parallel: the watcher (driven by an ``asyncio.Event``
+    stop signal) and a receive loop that sets the stop signal when the client
+    disconnects. Either side going away tears down the other.
+    """
     await ws.accept()
+    stop = asyncio.Event()
+
+    async def watch() -> None:
+        try:
+            async for changes in awatch(*WATCH_PATHS, stop_event=stop):
+                msg = (
+                    "css"
+                    if changes and all(str(p).endswith(".css") for _, p in changes)
+                    else "reload"
+                )
+                await ws.send_text(msg)
+        except Exception:
+            stop.set()
+
+    async def wait_close() -> None:
+        try:
+            while True:
+                await ws.receive_text()
+        except WebSocketDisconnect:
+            pass
+        finally:
+            stop.set()
+
     try:
-        async for changes in awatch(*WATCH_PATHS):
-            # CSS-only changes can hot-swap without a full page reload, which
-            # preserves scroll position and form state. Anything else — HTML,
-            # JS, Python — needs a full reload.
-            if changes and all(str(path).endswith(".css") for _, path in changes):
-                await ws.send_text("css")
-            else:
-                await ws.send_text("reload")
-    except WebSocketDisconnect:
-        pass
+        await asyncio.gather(watch(), wait_close())
+    except asyncio.CancelledError:
+        stop.set()
+        raise
 
 
 LIVERELOAD_SCRIPT = """

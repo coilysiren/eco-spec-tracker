@@ -80,6 +80,34 @@ def players_page(request: Request) -> HTMLResponse:
     return TEMPLATES.TemplateResponse(request, "players.html", {"players": mock_data.players()})
 
 
+@app.get("/specialties", response_class=HTMLResponse)
+def specialties_page(request: Request) -> HTMLResponse:
+    """Inverse of /players: per specialty, the players who hold it."""
+    return TEMPLATES.TemplateResponse(
+        request, "specialties.html", {"specialties": mock_data.specialties()}
+    )
+
+
+@app.get("/player-to-professions", response_class=HTMLResponse)
+def player_to_professions_page(request: Request) -> HTMLResponse:
+    """Stripped-down table: each player, their professions."""
+    return TEMPLATES.TemplateResponse(
+        request,
+        "player_to_professions.html",
+        {"rows": mock_data.player_to_professions()},
+    )
+
+
+@app.get("/profession-to-players", response_class=HTMLResponse)
+def profession_to_players_page(request: Request) -> HTMLResponse:
+    """Stripped-down table: each profession, its players."""
+    return TEMPLATES.TemplateResponse(
+        request,
+        "profession_to_players.html",
+        {"rows": mock_data.profession_stats()},
+    )
+
+
 # --- JSON API (machine-readable mirror of the mock data) ---
 
 
