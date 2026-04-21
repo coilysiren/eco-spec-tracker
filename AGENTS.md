@@ -41,11 +41,16 @@ Mock mode (current) bypasses the mod entirely and serves `mock_data.py`.
 
 ## Eco mod notes
 
-- Eco's web server is ASP.NET Core (Kestrel); it auto-discovers `[ApiController]` classes from any mod assembly via `AddApplicationPart`.
-- A UserCode `.cs` file with `[Route("api/v1/skills")] [ApiController]` is enough — the Roslyn compiler compiles it at server boot, no prebuild step.
-- Player/skill data: `UserManager.Users` → `user.Skillset.Skills` → `skill.Level` (>0 = learned) / `skill.IsSpecialty` / `skill.DisplayName`.
-- Reference: existing `UsersController` in `Eco/Server/Eco.Webserver/Web/Controllers/UsersController.cs`. Do NOT copy Eco source into this repo.
-- `eco-price-calculator` (mod.io) is a known community mod that adds API endpoints to Eco; source is not published but confirms the approach is standard.
+The mod is a standard UserCode mod: `.cs` files dropped into the server's `Mods/UserCode/` directory are compiled at server boot (no prebuild step). It uses the public ModKit API (`Eco.ReferenceAssemblies` NuGet, same as `eco-mods-public`).
+
+Reference for how mods are authored / packaged:
+- Sibling repo `eco-mods-public` for UserCode layout and `Register.cs` convention.
+- ModKit: https://github.com/StrangeLoopGames/EcoModKit.
+- Eco modding docs: https://docs.play.eco/.
+
+The community mod `eco-price-calculator` (mod.io) is a known example of a mod that adds HTTP API endpoints; its source isn't published but confirms the approach is standard.
+
+**Do not copy any file from the user's local Eco source checkout into this repo.** Only the public ModKit API surface should appear here.
 
 ## Sibling repos
 
