@@ -23,6 +23,8 @@ to that doc's §7 / §9.
 - Fix lint errors automatically.
 - Readonly git + shell commands (`ls`, `grep`, `cat`, etc.) are always fine.
 - `cd` into any `/Users/kai/projects/coilysiren` folder without asking.
+- Readonly SSH diagnostics against `kai-server` (`ssh kai@kai-server 'sudo k3s-readonly-kubectl ...'`) are always fine — the wrapper already blocks mutations and Secret reads. Cluster writes (`kubectl apply/delete/patch`, direct sudo) still require explicit confirmation.
+- When working in a worktree, commit and merge the worktree branch into `main` automatically without asking.
 
 ## Project layout
 
