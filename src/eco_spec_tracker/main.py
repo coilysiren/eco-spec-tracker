@@ -20,6 +20,8 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
 from eco_spec_tracker import mock_data
+from eco_spec_tracker.livereload import DEBUG, LIVERELOAD_SCRIPT
+from eco_spec_tracker.livereload import router as livereload_router
 
 BASE_DIR = Path(__file__).resolve().parent
 TEMPLATES = Jinja2Templates(directory=str(BASE_DIR / "templates"))
@@ -27,9 +29,12 @@ TEMPLATES = Jinja2Templates(directory=str(BASE_DIR / "templates"))
 # eco-mcp-app's CSS spliced into our base template via a Jinja global.
 # Read once at module import; the bytes are tiny.
 TEMPLATES.env.globals["eco_mcp_css"] = status_css()
+TEMPLATES.env.globals["livereload_script"] = LIVERELOAD_SCRIPT if DEBUG else ""
 
 app = FastAPI(title="eco-jobs-tracker", version="0.1.0")
 app.mount("/static", StaticFiles(directory=str(BASE_DIR / "static")), name="static")
+if DEBUG:
+    app.include_router(livereload_router)
 
 
 @app.get("/healthz")

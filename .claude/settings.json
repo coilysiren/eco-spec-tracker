@@ -6,7 +6,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "lsof -iTCP:4100 -sTCP:LISTEN -t >/dev/null 2>&1 || nohup uv run uvicorn eco_spec_tracker.main:app --reload --reload-dir src --host 0.0.0.0 --port 4100 >/tmp/eco-spec-tracker-uvicorn.log 2>&1 &",
+            "command": "lsof -iTCP:4100 -sTCP:LISTEN -t >/dev/null 2>&1 || DEBUG=1 nohup uv run uvicorn eco_spec_tracker.main:app --reload --reload-dir src --host 0.0.0.0 --port 4100 >/tmp/eco-spec-tracker-uvicorn.log 2>&1 &",
             "async": true
           }
         ]

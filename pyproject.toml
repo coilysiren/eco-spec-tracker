@@ -12,6 +12,7 @@ dependencies = [
   "jinja2>=3.1.0",
   "httpx>=0.28.0",
   "eco-mcp-app",
+  "watchfiles>=1.1.1",
 ]
 
 [tool.uv]

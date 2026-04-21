@@ -55,9 +55,9 @@ publish: build-docker .publish
 ## deploy the application to the cluster
 deploy: publish .deploy
 
-## run the FastAPI server locally with autoreload
+## run the FastAPI server locally with autoreload + browser livereload
 run-native:
-	uv run uvicorn eco_spec_tracker.main:app --reload --reload-dir src --port $(port) --host 0.0.0.0
+	DEBUG=1 uv run uvicorn eco_spec_tracker.main:app --reload --reload-dir src --port $(port) --host 0.0.0.0
 
 ## run the app inside a docker container
 run-docker:
