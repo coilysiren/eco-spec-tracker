@@ -11,17 +11,9 @@ in lockstep with whatever eco-mcp-app ships.
 
 from __future__ import annotations
 
-from importlib.resources import files as pkg_files
 from pathlib import Path
 
-import httpx
-from eco_mcp_app.server import (
-    _render_card,
-    _render_error,
-    fetch_eco_info,
-    redact,
-    to_payload,
-)
+from eco_mcp_app import render_status_html, status_css
 from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
@@ -32,10 +24,9 @@ from eco_spec_tracker import mock_data
 BASE_DIR = Path(__file__).resolve().parent
 TEMPLATES = Jinja2Templates(directory=str(BASE_DIR / "templates"))
 
-# Pull eco-mcp-app's CSS from the installed package and splice it into our
-# base template via context. Read once at module import; the bytes are tiny.
-ECO_MCP_CSS = pkg_files("eco_mcp_app.templates").joinpath("eco.css").read_text()
-TEMPLATES.env.globals["eco_mcp_css"] = ECO_MCP_CSS
+# eco-mcp-app's CSS spliced into our base template via a Jinja global.
+# Read once at module import; the bytes are tiny.
+TEMPLATES.env.globals["eco_mcp_css"] = status_css()
 
 app = FastAPI(title="eco-jobs-tracker", version="0.1.0")
 app.mount("/static", StaticFiles(directory=str(BASE_DIR / "static")), name="static")
@@ -48,12 +39,8 @@ def healthz() -> JSONResponse:
 
 @app.get("/partials/eco-card", response_class=HTMLResponse)
 async def partial_eco_card() -> HTMLResponse:
-    """Live Eco server status card, rendered by eco-mcp-app's Jinja2 templates."""
-    try:
-        info = await fetch_eco_info()
-    except httpx.HTTPError as e:
-        return HTMLResponse(_render_error(str(e)))
-    return HTMLResponse(_render_card(to_payload(redact(info))))
+    """Live Eco server status card, rendered by eco-mcp-app."""
+    return HTMLResponse(await render_status_html())
 
 
 @app.get("/", response_class=HTMLResponse)

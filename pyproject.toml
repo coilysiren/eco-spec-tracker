@@ -18,7 +18,7 @@ dependencies = [
 managed = true
 
 [tool.uv.sources]
-eco-mcp-app = { git = "https://github.com/coilysiren/eco-mcp-app.git", rev = "de5d89956eec7912da846af1cee5340feb4a7569" }
+eco-mcp-app = { git = "https://github.com/coilysiren/eco-mcp-app.git", rev = "81d7372e6815d103c1930c87ebaf6f104f7cf229" }
 
 [build-system]
 requires = ["hatchling"]
