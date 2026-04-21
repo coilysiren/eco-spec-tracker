@@ -1,0 +1,34 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "fastapi",
+      "runtimeExecutable": "uv",
+      "runtimeArgs": [
+        "run",
+        "uvicorn",
+        "eco_spec_tracker.main:app",
+        "--reload",
+        "--reload-dir",
+        "src",
+        "--host",
+        "0.0.0.0",
+        "--port",
+        "4100"
+      ],
+      "port": 4100,
+      "url": "/"
+    },
+    {
+      "name": "shell",
+      "runtimeExecutable": "dotnet",
+      "runtimeArgs": [
+        "run",
+        "--project",
+        "mod/shell/EcoJobsTracker.Shell.csproj"
+      ],
+      "port": 5100,
+      "url": "/api/v1/skills"
+    }
+  ]
+}
