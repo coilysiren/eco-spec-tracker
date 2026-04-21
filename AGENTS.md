@@ -4,6 +4,18 @@ FastAPI + Jinja2 + HTMX web app that lists every Eco player's jobs (professions/
 
 Deploy target: `eco-jobs-tracker.coilysiren.me` (k3s homelab, same rig as `backend` / `eco-mcp-app`).
 
+## Deploy reference
+
+This repo is the **canonical reference** for the current deploy
+shape — when other repos need to match a working baseline,
+eco-spec-tracker is what they copy from (commit `49f99e4`). That said,
+the comprehensive writeup lives elsewhere:
+[`coilysiren/infrastructure/docs/k3s-deploy-notes.md`](../infrastructure/docs/k3s-deploy-notes.md)
+is where to read first before touching any deploy config
+(Dockerfile, Makefile, `deploy/main.yml`, GHA workflow, or
+Tailscale/k3s secrets). When you resolve a new deploy pitfall, add it
+to that doc's §7 / §9.
+
 ## Autonomy
 
 - Commit directly to `main`. Do not open PRs unless asked.
