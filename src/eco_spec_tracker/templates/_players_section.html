@@ -1,0 +1,23 @@
+<h2 class="mb-4 text-xl font-semibold">Players</h2>
+<ul class="m-0 grid list-none grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-3 p-0">
+  {% for p in players %}
+    <li class="rounded-md border border-slate-800 bg-slate-900 px-4 py-3 {% if not p.active %}opacity-60{% endif %}">
+      <h3 class="mb-2 flex items-center justify-between text-base font-medium">
+        {{ p.name }}
+        {% if p.active %}
+          <span class="rounded-full bg-accent-dim px-2 py-0.5 text-[10px] font-semibold uppercase text-slate-950">active</span>
+        {% else %}
+          <span class="rounded-full bg-amber-500 px-2 py-0.5 text-[10px] font-semibold uppercase text-slate-950">inactive</span>
+        {% endif %}
+      </h3>
+      <ul class="m-0 list-none p-0">
+        {% for s in p.specialties %}
+          <li class="flex justify-between border-b border-dotted border-slate-800 py-1 text-xs last:border-0">
+            <span>{{ s.specialty }}</span>
+            <span class="tabular-nums text-slate-400">lvl {{ s.level }}</span>
+          </li>
+        {% endfor %}
+      </ul>
+    </li>
+  {% endfor %}
+</ul>

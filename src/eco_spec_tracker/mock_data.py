@@ -145,29 +145,6 @@ def _specialty_to_profession() -> dict[str, str]:
     return {s: prof for prof, specs in PROFESSION_SPECIALTIES.items() for s in specs}
 
 
-@dataclass(frozen=True)
-class PlayerProfessions:
-    player: str
-    active: bool
-    professions: list[str]
-
-
-def player_to_professions() -> list[PlayerProfessions]:
-    """Each player and the distinct professions implied by their specialties."""
-    prof_of = _specialty_to_profession()
-    by_player: dict[str, set[str]] = {}
-    active_of: dict[str, bool] = {}
-    for r in _MOCK_ROWS:
-        by_player.setdefault(r.player, set()).add(prof_of.get(r.specialty, "Other"))
-        active_of[r.player] = active_of.get(r.player, False) or r.active
-    out = [
-        PlayerProfessions(player=p, active=active_of[p], professions=sorted(profs))
-        for p, profs in by_player.items()
-    ]
-    out.sort(key=lambda x: (not x.active, x.player))
-    return out
-
-
 def specialties() -> list[SpecialtyView]:
     """The inverse of players(): per specialty, who holds it and at what level."""
     prof_of = _specialty_to_profession()

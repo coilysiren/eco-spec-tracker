@@ -1,24 +1,5 @@
 {% extends "base.html" %}
 {% block title %}Specialties — eco-jobs-tracker{% endblock %}
 {% block content %}
-  <h2 class="mb-4 text-xl font-semibold">Specialties</h2>
-  <ul class="m-0 grid list-none grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-3 p-0">
-    {% for s in specialties %}
-      <li class="rounded-md border border-slate-800 bg-slate-900 px-4 py-3 {% if s.active == 0 %}opacity-60{% endif %}">
-        <h3 class="mb-1 flex items-center justify-between text-base font-medium">
-          {{ s.name }}
-          <span class="tabular-nums text-accent">( {{ s.active }} / {{ s.total }} )</span>
-        </h3>
-        <p class="mb-2 text-[11px] uppercase tracking-wide text-slate-500">{{ s.profession }}</p>
-        <ul class="m-0 list-none p-0">
-          {% for h in s.holders %}
-            <li class="flex items-center justify-between border-b border-dotted border-slate-800 py-1 text-xs last:border-0 {% if not h.active %}opacity-50{% endif %}">
-              <span>{{ h.player }}</span>
-              <span class="tabular-nums text-slate-400">lvl {{ h.level }}</span>
-            </li>
-          {% endfor %}
-        </ul>
-      </li>
-    {% endfor %}
-  </ul>
+  {% include "_specialties_section.html" %}
 {% endblock %}

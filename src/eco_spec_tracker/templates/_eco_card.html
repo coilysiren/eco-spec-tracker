@@ -1,0 +1,13 @@
+<!--
+  Live Eco server status card (banner + meteor countdown + player/world stats).
+  Rendered by eco-mcp-app's Jinja2 templates, lazy-loaded via HTMX so our
+  first paint isn't blocked on the upstream /info fetch.
+-->
+<section
+  class="shell eco-mcp-card mb-8"
+  hx-get="/partials/eco-card"
+  hx-trigger="load"
+  hx-swap="innerHTML"
+>
+  <p class="text-sm text-slate-400">Loading Eco server status…</p>
+</section>

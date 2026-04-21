@@ -1,19 +1,15 @@
 {% extends "base.html" %}
-{% block title %}Professions — eco-jobs-tracker{% endblock %}
+{% block title %}eco-jobs-tracker{% endblock %}
 {% block content %}
-  <section class="mb-4 flex items-center justify-between">
-    <p class="text-sm text-slate-300">
-      <strong class="text-slate-100">{{ total_players }}</strong> players tracked
-    </p>
-    <button
-      class="rounded border border-slate-700 bg-slate-800 px-3 py-1.5 text-sm text-slate-100 hover:border-accent"
-      hx-get="/partials/professions"
-      hx-target="#professions"
-      hx-swap="innerHTML"
-    >Refresh</button>
-  </section>
+  {% include "_eco_card.html" %}
 
-  <div id="professions">
-    {% include "_professions.html" %}
-  </div>
+  {% include "_professions_section.html" %}
+
+  <hr class="my-10 border-slate-800">
+
+  {% include "_specialties_section.html" %}
+
+  <hr class="my-10 border-slate-800">
+
+  {% include "_players_section.html" %}
 {% endblock %}

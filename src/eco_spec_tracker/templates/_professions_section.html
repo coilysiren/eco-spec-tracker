@@ -1,0 +1,18 @@
+<section class="mb-4 flex items-center justify-between">
+  <h2 class="text-xl font-semibold">Professions</h2>
+  <div class="flex items-center gap-3">
+    <p class="text-sm text-slate-400">
+      <strong class="text-slate-100">{{ total_players }}</strong> players tracked
+    </p>
+    <button
+      class="rounded border border-slate-700 bg-slate-800 px-3 py-1.5 text-sm text-slate-100 hover:border-accent"
+      hx-get="/partials/professions"
+      hx-target="#professions"
+      hx-swap="innerHTML"
+    >Refresh</button>
+  </div>
+</section>
+
+<div id="professions">
+  {% include "_professions.html" %}
+</div>

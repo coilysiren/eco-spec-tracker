@@ -50,12 +50,44 @@ async def partial_eco_card() -> HTMLResponse:
 
 @app.get("/", response_class=HTMLResponse)
 def index(request: Request) -> HTMLResponse:
-    stats = mock_data.profession_stats()
+    """Homepage: live eco card + all three content sections stacked."""
     return TEMPLATES.TemplateResponse(
         request,
         "index.html",
-        {"stats": stats, "total_players": len(mock_data.players())},
+        {
+            "stats": mock_data.profession_stats(),
+            "specialties": mock_data.specialties(),
+            "players": mock_data.players(),
+            "total_players": len(mock_data.players()),
+        },
     )
+
+
+@app.get("/professions", response_class=HTMLResponse)
+def professions_page(request: Request) -> HTMLResponse:
+    """Just the Professions section, no eco card."""
+    return TEMPLATES.TemplateResponse(
+        request,
+        "professions.html",
+        {
+            "stats": mock_data.profession_stats(),
+            "total_players": len(mock_data.players()),
+        },
+    )
+
+
+@app.get("/specialties", response_class=HTMLResponse)
+def specialties_page(request: Request) -> HTMLResponse:
+    """Just the Specialties section, no eco card."""
+    return TEMPLATES.TemplateResponse(
+        request, "specialties.html", {"specialties": mock_data.specialties()}
+    )
+
+
+@app.get("/players", response_class=HTMLResponse)
+def players_page(request: Request) -> HTMLResponse:
+    """Just the Players section, no eco card."""
+    return TEMPLATES.TemplateResponse(request, "players.html", {"players": mock_data.players()})
 
 
 @app.get("/partials/professions", response_class=HTMLResponse)
@@ -73,39 +105,6 @@ def partial_profession_detail(request: Request, name: str) -> HTMLResponse:
     if stat is None:
         return HTMLResponse(f"<p>Unknown profession: {name}</p>", status_code=404)
     return TEMPLATES.TemplateResponse(request, "_profession_detail.html", {"stat": stat})
-
-
-@app.get("/players", response_class=HTMLResponse)
-def players_page(request: Request) -> HTMLResponse:
-    return TEMPLATES.TemplateResponse(request, "players.html", {"players": mock_data.players()})
-
-
-@app.get("/specialties", response_class=HTMLResponse)
-def specialties_page(request: Request) -> HTMLResponse:
-    """Inverse of /players: per specialty, the players who hold it."""
-    return TEMPLATES.TemplateResponse(
-        request, "specialties.html", {"specialties": mock_data.specialties()}
-    )
-
-
-@app.get("/player-to-professions", response_class=HTMLResponse)
-def player_to_professions_page(request: Request) -> HTMLResponse:
-    """Stripped-down table: each player, their professions."""
-    return TEMPLATES.TemplateResponse(
-        request,
-        "player_to_professions.html",
-        {"rows": mock_data.player_to_professions()},
-    )
-
-
-@app.get("/profession-to-players", response_class=HTMLResponse)
-def profession_to_players_page(request: Request) -> HTMLResponse:
-    """Stripped-down table: each profession, its players."""
-    return TEMPLATES.TemplateResponse(
-        request,
-        "profession_to_players.html",
-        {"rows": mock_data.profession_stats()},
-    )
 
 
 # --- JSON API (machine-readable mirror of the mock data) ---
