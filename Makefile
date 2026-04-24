@@ -51,6 +51,7 @@ publish: build-docker .publish
 		DNS_NAME=$(dns-name) \
 		IMAGE=$(image-url) \
 		envsubst < deploy/main.yml | kubectl apply -f -
+	kubectl rollout status deployment/$(name-dashed)-app -n $(name-dashed) --timeout=5m
 
 # Stream the rendered manifest over tailscale SSH and apply on kai-server.
 # Avoids needing the k3s API reachable from CI — kai-server's own kubectl
