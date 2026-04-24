@@ -26,6 +26,30 @@ spec:
         key: /sentry-dsn/eco-spec-tracker
 
 ---
+# Eco admin API token. The mod's /api/v1/skills endpoint runs inside Eco's
+# ASP.NET Core host, which requires X-API-Key on /api/v1/* (same middleware
+# eco-mcp-app hits for /api/v1/exporter/*). upstream.py forwards the token
+# via UPSTREAM_API_KEY. Reuses the eco-mcp-app SSM param since there's one
+# admin token per Eco server; no reason to fan out.
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  name: ${NAME}-upstream
+  namespace: ${NAME}
+spec:
+  refreshInterval: 1h
+  secretStoreRef:
+    name: aws-parameter-store
+    kind: ClusterSecretStore
+  target:
+    name: ${NAME}-upstream
+    creationPolicy: Owner
+  data:
+    - secretKey: UPSTREAM_API_KEY
+      remoteRef:
+        key: /eco-mcp-app/api-admin-token
+
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -67,6 +91,11 @@ spec:
               value: "80"
             - name: UPSTREAM_URL
               value: "http://eco.coilysiren.me:3001/api/v1/skills"
+            - name: UPSTREAM_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: ${NAME}-upstream
+                  key: UPSTREAM_API_KEY
             - name: SENTRY_DSN
               valueFrom:
                 secretKeyRef:
