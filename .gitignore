@@ -6,3 +6,5 @@ __pycache__/
 .pytest_cache/
 .build
 .DS_Store
+.claude/settings.local.json
+.claude/worktrees/
