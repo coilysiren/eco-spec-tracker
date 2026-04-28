@@ -93,3 +93,14 @@ Build with `make build-mod` (drops the three files in `mod/src/bin/Release/net10
 
 - API-key provisioning for the mod endpoint (once we move off mock data).
 - Whether "active" means "online right now" or "logged in within N days" - currently a mock boolean.
+
+---
+
+## Post-push follow-up (auto-schedule)
+
+Per the workspace "Default to proactive scheduling" rule: after pushing to `main`, schedule a wake-up to verify the build-publish-deploy job landed on kai-server. CI builds the docker image, pushes to ghcr.io, and rolls out a k8s deployment; total time is ~6-12 min.
+
+- **Cadence**: 720s (12 min) after push.
+- **Verify CI**: `coily gh run list --repo coilysiren/eco-spec-tracker --limit 1` should show `completed/success`. Re-schedule once at +300s if in progress; surface and stop on failure.
+- **Verify rollout**: `coily kubectl --context=kai-server -n coilysiren-eco-spec-tracker rollout status deployment/coilysiren-eco-spec-tracker-app --timeout=2m`.
+- **Skip** for docs-only pushes.
