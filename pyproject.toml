@@ -61,3 +61,12 @@ asyncio_mode = "auto"
 [tool.pyright]
 venvPath = "."
 venv = ".venv"
+
+[tool.agentic-os.documentation-layout]
+# The mod/ subtree carries its own README + mod.io listing copy as part of its
+# distributed shape, exempt from the root/docs/skill location and size rules.
+excludes = ["mod/**"]
+
+[tool.agentic-os.code-comments]
+# Generated build output (.NET obj/bin) is not hand-written source.
+excludes = ["**/obj/**", "**/bin/**"]

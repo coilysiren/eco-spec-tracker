@@ -56,7 +56,7 @@ catalog:
   description: "Per-player who-can-make-what board for an Eco server. FastAPI + Jinja2 + HTMX, paired with a C# ModKit mod."
   dependsOn:
     - coilysiren/backend
-    - coilysiren/eco-mods
+    - coilysiren/eco-mods-public
     - coilysiren/infrastructure
   providesApis:
     - eco-jobs-tracker-http

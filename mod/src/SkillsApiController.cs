@@ -26,12 +26,8 @@ public class SkillsApiController : ControllerBase
                     skill.MaxLevel))
                 .ToArray();
 
-            // user.LogoutTime is in Eco's WorldTime seconds. Anchor it to
-            // wall-clock by subtracting elapsed game-seconds from nowUtc.
-            // With Eco's default 1:1 time scale this matches wall-clock;
-            // accelerated time scales the gap proportionally but the
-            // tracker's "active in last N days" bucket is loose enough
-            // to absorb that.
+            // user.LogoutTime is Eco WorldTime seconds. Anchor to wall-clock as
+            // nowUtc minus elapsed game-seconds. The active-in-N-days bucket absorbs it.
             string? lastSeen = null;
             if (user.LoggedIn)
             {

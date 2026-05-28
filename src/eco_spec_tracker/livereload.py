@@ -29,10 +29,8 @@ from watchfiles import awatch
 
 DEBUG = os.getenv("DEBUG", "").lower() in ("1", "true", "yes")
 
-# Watch the whole src/eco_spec_tracker/ tree. .py changes trigger uvicorn's
-# own reload first; the watcher then catches the resulting restart via the
-# WebSocket closing and the client reconnects. Template/static changes are
-# picked up directly by the watcher.
+# Watch the src/eco_spec_tracker/ tree. Template/static changes are picked up
+# directly. .py changes ride uvicorn's own reload, then the client reconnects.
 _WATCH_ROOT = Path(__file__).resolve().parent
 WATCH_PATHS: tuple[str, ...] = (str(_WATCH_ROOT),)
 

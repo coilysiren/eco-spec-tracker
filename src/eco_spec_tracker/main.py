@@ -27,9 +27,8 @@ from eco_spec_tracker.livereload import router as livereload_router
 
 telemetry.init_sentry()
 
-# Allow coilysiren.me to embed this app in an iframe (eco-modding page).
-# Modern browsers honor frame-ancestors and ignore X-Frame-Options when both
-# are present — keep X-Frame-Options unset everywhere (app + ingress).
+# Allow coilysiren.me to embed this app in an iframe (eco-modding page) via
+# frame-ancestors. Keep X-Frame-Options unset everywhere (app + ingress).
 FRAME_ANCESTORS_CSP = "frame-ancestors 'self' https://www.coilysiren.me https://coilysiren.me"
 
 BASE_DIR = Path(__file__).resolve().parent
@@ -61,11 +60,8 @@ def healthz() -> JSONResponse:
     return JSONResponse({"ok": True})
 
 
-# eco-mcp-app's card.html bakes in a "Try this card on another public Eco
-# server" pill strip and a "© Kai Siren · view source" credits line. The
-# try-others pills belong in eco-mcp-app's /preview UI, not a jobs tracker
-# pinned to one server; the credits line duplicates our own outer footer.
-# Strip both blocks out of the rendered card HTML.
+# eco-mcp-app's card.html bakes in a "try other servers" pill strip and a
+# credits line. Strip both: pills belong in its /preview, credits duplicate ours.
 _TRY_OTHERS_RE = re.compile(r'<div class="try-others">.*?</div>\s*</div>', flags=re.DOTALL)
 _CREDITS_LINE_RE = re.compile(r'<div class="credits-line">.*?</div>', flags=re.DOTALL)
 

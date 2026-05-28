@@ -6,10 +6,6 @@ Read-only "who can make what" board for an **Eco** [1] server in 300 lines of Fa
 
 Paired with a small C# Eco mod that exposes `GET /api/v1/skills`: the mod is the source of truth, this app is the view. Today the app reads mock data (`UPSTREAM_URL` unset); point it at the shell harness on `:5100` or the real mod and it switches over.
 
-![](https://img.shields.io/badge/python-3.13-3776ab)
-![](https://img.shields.io/badge/fastapi-0.115+-009688)
-![](https://img.shields.io/badge/htmx-2.0-3366cc)
-
 ## Screenshot
 
 [![eco-jobs-tracker](docs/screenshot.png)](https://eco-jobs-tracker.coilysiren.me/)
@@ -57,7 +53,7 @@ Drops into an Eco server's `Mods/EcoJobsTracker/` directory.
 
 ## Publishing to mod.io
 
-See [`docs/modio.md`](docs/modio.md) for the canonical listing copy + zip shape. Bump `<Version>` in [`mod/src/EcoJobsTracker.csproj`](mod/src/EcoJobsTracker.csproj) before each upload.
+See [`mod/modio.md`](mod/modio.md) for the canonical listing copy + zip shape. Bump `<Version>` in [`mod/src/EcoJobsTracker.csproj`](mod/src/EcoJobsTracker.csproj) before each upload.
 
 ## Deploy
 

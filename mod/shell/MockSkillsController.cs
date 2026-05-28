@@ -3,13 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace EcoJobsTracker.Shell;
 
-// Serves the same route as the real mod with canned data, so the Python
-// tracker can iterate against a live C# HTTP server without booting Eco.
-//
-// lastSeen values are computed at request time relative to now so the
-// "active" filter on the Python side stays meaningful across reloads:
-// some players are recent (within the default 7-day window), some are
-// stale (> 7 days), one has never logged in (null).
+// Same route as the real mod with canned data, so the Python tracker iterates
+// against a live C# server without booting Eco. lastSeen is recomputed per request.
 [ApiController]
 [Route("api/v1/skills")]
 public class MockSkillsController : ControllerBase

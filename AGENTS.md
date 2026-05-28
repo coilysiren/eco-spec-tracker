@@ -2,94 +2,63 @@
 
 See `../AGENTS.md` for workspace conventions. This file covers what's specific.
 
----
-
-# eco-spec-tracker / eco-jobs-tracker
+## Scope
 
 FastAPI + Jinja2 + HTMX app listing every Eco player's jobs (professions/specialties) with `active / total` counts. Paired with a C# Eco mod exposing `/api/v1/skills`. Deploy: `eco-jobs-tracker.coilysiren.me` (k3s homelab).
 
-## Deploy reference
+## Project shape
 
-This repo is the **canonical reference** for the current deploy shape - other repos copy from here (commit `49f99e4`). Comprehensive writeup at [`infrastructure/docs/k3s-deploy-notes.md`](../infrastructure/docs/k3s-deploy-notes.md). Read before touching Dockerfile, Makefile, `deploy/main.yml`, GHA, or Tailscale/k3s secrets. Add new pitfalls to its §7 / §9.
+Python web app:
 
-## Project layout
+- `src/eco_spec_tracker/main.py` - FastAPI app. Routes `/`, `/players`, `/healthz`, `/partials/*`, `/api/v1/*`.
+- `src/eco_spec_tracker/mock_data.py` - placeholder matching the mod's shape.
+- `src/eco_spec_tracker/templates/` - Jinja2 `base.html` + `_*.html` HTMX partials, Tailwind CDN.
 
-Python (web app):
-- `src/eco_spec_tracker/main.py` - FastAPI app. Routes: `/`, `/players`, `/healthz`, `/partials/*`, `/api/v1/*`.
-- `src/eco_spec_tracker/mock_data.py` - placeholder matching mod's shape.
-- `src/eco_spec_tracker/templates/` - Jinja2. `base.html` layout, `_*.html` HTMX partials. Tailwind CDN.
+C# mod (`mod/`):
 
-C# (mod):
-- `mod/eco-jobs-tracker.sln` - one solution, two projects.
-- `mod/src/EcoJobsTracker.csproj` + `.cs` - the real mod. References `Eco.ReferenceAssemblies`. Drops into `Server/Mods/EcoJobsTracker/`.
-- `mod/shell/EcoJobsTracker.Shell.csproj` + `.cs` - standalone ASP.NET harness on `:5100`. Same route, canned data.
-- `mod/src/Dtos.cs` - shared DTO records, `<Compile Include>`-linked into the shell.
+- `eco-jobs-tracker.sln` - one solution, two projects.
+- `src/` - the real mod, references `Eco.ReferenceAssemblies`, drops into `Server/Mods/EcoJobsTracker/`.
+- `shell/` - standalone ASP.NET harness on `:5100`, same route, canned data.
+- `src/Dtos.cs` - shared DTO records, `<Compile Include>`-linked into the shell.
 
-Deploy rig (cloned from `coilysiren/backend`):
-- `Makefile`, `Dockerfile`, `config.yml`, `deploy/main.yml`, `.github/workflows/build-and-publish.yml`.
+Deploy rig (cloned from `coilysiren/backend`): `Makefile`, `Dockerfile`, `config.yml`, `deploy/main.yml`, GHA workflow.
 
-## Dev loop
+## Repo boundaries
 
-- `make build-native` - `uv sync --group dev`.
-- `make run-native` - uvicorn `:4100` with `--reload`.
-- `make run-shell` - C# harness on `:5100`.
-- `make build-mod` - compile real mod DLL.
-- `make build-docker` / `make deploy` - build/push image, k3s rollout.
-- `pre-commit install` - ruff + mypy + `dotnet format`.
+This repo is the canonical reference for the current deploy shape - other repos copy from here. Writeup: [`infrastructure/docs/k3s-deploy-notes.md`](../infrastructure/docs/k3s-deploy-notes.md). Read before touching Dockerfile, Makefile, `deploy/main.yml`, GHA, or Tailscale/k3s secrets.
 
-## Data flow
+## Commands
 
-```
-Eco server ──[EcoJobsTracker.dll]──► GET /api/v1/skills
-                                          ▲
-                              or locally  │
-                                          │
-mod/shell (Shell) ───────────────────────┘  (:5100, mock data)
+Route dev verbs through `coily`, which reads [.coily/coily.yaml](.coily/coily.yaml):
 
-                FastAPI tracker (:4100 local, eco-jobs-tracker.coilysiren.me)
-                    ├─ HTML UI (Jinja2 + HTMX + Tailwind)
-                    └─ /api/v1/{professions,players}
-```
+- `coily exec build-native` / `run-native` - uv sync, uvicorn `:4100` with reload.
+- `coily exec run-shell` - C# harness on `:5100`.
+- `coily exec build-mod` - compile the real mod DLL.
+- `coily exec build-docker` / `publish` - build the image, push to GHCR.
 
-`UPSTREAM_URL` env var controls whether FastAPI reads `mock_data.py` directly or pulls from shell/mod.
+GHA (`build-and-publish.yml`) runs tests and publishes the image on push to `main`. The k3s rollout is the Makefile `deploy` target (`publish` + apply + rollout), not a CI job. `UPSTREAM_URL` selects whether FastAPI reads `mock_data.py` or pulls from shell/mod.
 
-## Eco mod notes
+## Validation
 
-Standard UserCode mod: `.cs` files in `Mods/UserCode/` compile at server boot. Uses public ModKit API (`Eco.ReferenceAssemblies` NuGet, same as `eco-mods-public`).
+Run `coily exec precommit` (ruff + mypy + `dotnet format` + agentic-os checks) and `coily exec test` before pushing. Run tests, linters, and builds without asking. Fix failures. Never use `--no-verify`.
 
-References:
-- Sibling `eco-mods-public` for UserCode layout + `Register.cs`.
-- ModKit: https://github.com/StrangeLoopGames/EcoModKit.
-- Eco docs: https://docs.play.eco/.
+## Safety
 
-Community `eco-price-calculator` (mod.io) is a known example of HTTP-endpoint mods; source isn't published but confirms approach is standard.
+Do not change `config.yml`'s `name` - it cascades into every k8s resource and the image tag. The mod uses only the public ModKit API (`Eco.ReferenceAssemblies` NuGet). Do not copy from any local Eco source checkout.
 
-**Do not copy from local Eco source checkout.** Only public ModKit API.
+## Cross-repo contracts
 
-## Sibling repos
+The mod is the source of truth, this app the view. The homepage server-status card imports from sibling `eco-mcp-app` (git dep). Push the mod before the web app picks up `UPSTREAM_URL` - no fallback on a dead endpoint. See [`infrastructure/eco.md`](../infrastructure/eco.md) §4.
 
-- `backend` (public) - canonical deploy template (k3s + GHCR + Tailscale + cert-manager).
-- `eco-mcp-app` (public) - MCP server exposing Eco `/info`. Same deploy rig.
-- `eco-mods` / `eco-mods-public` (private/public) - C# mods.
-- `infrastructure` (public) - k3s, Traefik, cert-manager.
-- `kai-server` (public) - homelab k3s box.
+## Release
 
-## Reaching the homelab
+Push the mod DLL with `coily eco mod push --src EcoJobsTracker.zip` (zip must hold `Mods/EcoJobsTracker/EcoJobsTracker.dll` + sibling `.deps.json`/`.pdb`), then `coily eco restart`. mod.io listing copy: [`mod/modio.md`](mod/modio.md).
 
-`tailscale up && ssh kai@kai-server`. The GHA `deploy` job does the same (tailscale up → kubeconfig → `make .deploy`).
+After pushing `main` (skip docs-only), schedule a 720s wake-up: verify CI via `coily gh run list --repo coilysiren/eco-jobs-tracker --limit 1` (re-schedule once at +300s if in progress), then rollout via `coily kubectl --context=kai-server -n coilysiren-eco-spec-tracker rollout status deployment/coilysiren-eco-spec-tracker-app`.
 
-### Pushing the mod DLL
+## Agent rules
 
-`coily eco mod push --src EcoJobsTracker.zip`. Zip must contain `Mods/EcoJobsTracker/EcoJobsTracker.dll` (+ sibling `.deps.json` / `.pdb`) so it extracts under `/home/kai/Steam/steamapps/common/EcoServer/`. Then `coily eco restart`. See [`infrastructure/eco.md`](../infrastructure/eco.md) §4 for sequencing (push mod before web picks up `UPSTREAM_URL` - no fallback on dead endpoint).
-
-## Post-push follow-up
-
-After pushing `main`, schedule a wake-up to verify deploy.
-
-- **Cadence**: 720s.
-- **Verify CI**: `coily gh run list --repo coilysiren/eco-jobs-tracker --limit 1`. Re-schedule once at +300s if in progress; surface and stop on failure.
-- **Verify rollout**: `coily kubectl --context=kai-server -n coilysiren-eco-spec-tracker rollout status deployment/coilysiren-eco-spec-tracker-app --timeout=2m`.
-- **Skip** for docs-only pushes.
+Commit to main directly, push after each commit, no PRs unless asked.
 
 ## See also
 
