@@ -8,7 +8,12 @@ name ?= $(shell cat config.yml | yq e '.name')
 port ?= $(shell cat config.yml | yq e '.port')
 name-dashed ?= $(subst /,-,$(name))
 git-hash ?= $(shell git rev-parse HEAD 2>/dev/null || echo dev)
-image-url ?= ghcr.io/$(name)/$(name-dashed):$(git-hash)
+# Fully-qualified ref into the in-cluster registry. Forgejo Actions builds
+# this, pushes it over plain http (the runner's DinD carries
+# --insecure-registry=192.168.0.194:30500), and kai-server's containerd
+# pulls it via its registries.yaml insecure entry. See
+# coilysiren/infrastructure#168, #171.
+image-url ?= 192.168.0.194:30500/$(name-dashed):$(git-hash)
 
 help: ## Print this help.
 	@awk 'BEGIN {FS = ":.*?## "} /^[a-zA-Z_-]+:.*?## / {printf "%-30s %s\n", $$1, $$2}' $(MAKEFILE_LIST)
@@ -32,7 +37,7 @@ build-docker: .build-docker ## Build the docker image locally with BuildKit cach
 	docker tag $(name):$(git-hash) $(image-url)
 	docker push $(image-url)
 
-publish: build-docker .publish ## Tag and push the docker image to ghcr.io.
+publish: build-docker .publish ## Tag and push the docker image to the in-cluster registry.
 
 .deploy:
 	env \

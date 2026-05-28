@@ -2,6 +2,60 @@ apiVersion: v1
 kind: Namespace
 metadata:
   name: ${NAME}
+---
+# Deployer ServiceAccount for the Forgejo Actions release pipeline. The CI
+# deploy job authenticates as this SA to roll the app Deployment over the
+# LAN (kubeconfig in the Forgejo Actions secret DEPLOY_KUBECONFIG on
+# coilysiren/eco-jobs-tracker, built from this SA's token Secret below). No
+# tailnet join, no SSH. See coilysiren/eco-jobs-tracker#19, coilysiren/backend#25.
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: deployer
+  namespace: ${NAME}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: deployer
+  namespace: ${NAME}
+rules:
+  - apiGroups: ["apps"]
+    resources: ["deployments"]
+    verbs: ["get", "patch"]
+  - apiGroups: ["apps"]
+    resources: ["deployments/status"]
+    verbs: ["get"]
+  - apiGroups: [""]
+    resources: ["pods"]
+    verbs: ["get", "list"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: deployer
+  namespace: ${NAME}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: deployer
+subjects:
+  - kind: ServiceAccount
+    name: deployer
+    namespace: ${NAME}
+---
+# Long-lived token for the deployer SA. Kubernetes populates token, ca.crt,
+# and namespace into this Secret; the DEPLOY_KUBECONFIG Forgejo secret is
+# built from its ca.crt + token. Regenerate the kubeconfig if rotated. The
+# token never lives in git. See coilysiren/eco-jobs-tracker#19.
+apiVersion: v1
+kind: Secret
+metadata:
+  name: deployer-token
+  namespace: ${NAME}
+  annotations:
+    kubernetes.io/service-account.name: deployer
+type: kubernetes.io/service-account-token
 
 ---
 # Sentry DSN for this service, synced from AWS SSM via external-secrets.
@@ -147,6 +201,10 @@ spec:
       containers:
         - name: ${NAME}
           image: ${IMAGE}
+          # Pulled from the in-cluster registry (192.168.0.194:30500) by
+          # kai-server's containerd over plain http. Always, so each rolled
+          # ${git-hash} tag is fetched fresh. See coilysiren/infrastructure#171.
+          imagePullPolicy: Always
           resources:
             requests:
               cpu: "50m"
