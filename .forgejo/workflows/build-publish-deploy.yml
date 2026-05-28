@@ -1,0 +1,56 @@
+name: build-publish-deploy
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  test:
+    runs-on: docker
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+      - run: uv sync --group dev
+      - run: uv run pytest
+      - run: uv run ruff check src tests
+      - run: uv run ruff format --check src tests
+      - run: uv run mypy src tests
+
+  deploy:
+    runs-on: docker
+    needs: test
+    steps:
+      - uses: actions/checkout@v4
+      # Build the image and push it to the in-cluster registry. The runner's
+      # DinD sidecar is the docker host (DOCKER_HOST=tcp://localhost:2375) and
+      # carries --insecure-registry=192.168.0.194:30500, so the plain-http
+      # push to the NodePort registry round-trips. No tailnet join, no GHCR,
+      # no docker-save sideload. See coilysiren/infrastructure#168, #171.
+      - name: Build and push
+        run: |
+          set -euo pipefail
+          IMAGE=192.168.0.194:30500/coilysiren-eco-spec-tracker:${{ github.sha }}
+          docker build \
+            --progress plain \
+            --build-arg BUILDKIT_INLINE_CACHE=1 \
+            -t "$IMAGE" \
+            .
+          docker push "$IMAGE"
+      # Roll the deployment over the LAN. The kubeconfig points at the k3s API
+      # on the LAN IP (192.168.0.194:6443, in the cert SANs) and authenticates
+      # as the deployer ServiceAccount (deploy/main.yml). The app pod is pinned
+      # to kai-server, where registries.yaml has the insecure entry, so the
+      # cluster-side pull of 192.168.0.194:30500/... lands on that node (#171).
+      - name: Roll deployment
+        env:
+          DEPLOY_KUBECONFIG: ${{ secrets.DEPLOY_KUBECONFIG }}
+        run: |
+          set -euo pipefail
+          IMAGE=192.168.0.194:30500/coilysiren-eco-spec-tracker:${{ github.sha }}
+          echo "$DEPLOY_KUBECONFIG" | base64 -d > /tmp/kubeconfig
+          export KUBECONFIG=/tmp/kubeconfig
+          kubectl -n coilysiren-eco-spec-tracker set image \
+            deploy/coilysiren-eco-spec-tracker-app coilysiren-eco-spec-tracker="$IMAGE"
+          kubectl -n coilysiren-eco-spec-tracker rollout status \
+            deploy/coilysiren-eco-spec-tracker-app --timeout=5m
