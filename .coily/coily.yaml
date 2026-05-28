@@ -55,9 +55,6 @@ catalog:
   lifecycle: production
   description: "Per-player who-can-make-what board for an Eco server. FastAPI + Jinja2 + HTMX, paired with a C# ModKit mod."
   dependsOn:
-    - coilysiren/backend
-    - coilysiren/eco-mods-public
-    - coilysiren/infrastructure
-  providesApis:
-    - eco-jobs-tracker-http
-    - eco-jobs-tracker-mod
+    - forgejo.coilysiren.me/coilysiren/backend
+    - forgejo.coilysiren.me/coilysiren/eco-mods-public
+    - forgejo.coilysiren.me/coilysiren/infrastructure
