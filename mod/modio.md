@@ -8,7 +8,7 @@ behavior or distribution shape changes.
 - **Visibility:** Public
 - **Maturity:** None
 - **Logo:** `docs/logo-modio.png` (1600x900, cropped from the live dashboard's Professions grid)
-- **Homepage URL:** <https://github.com/coilysiren/eco-jobs-tracker>
+- **Homepage URL:** <https://github.com/coilyco-flight-deck/eco-jobs-tracker>
 - **Live demo:** <https://eco-jobs-tracker.coilysiren.me/> (the FastAPI dashboard in this same repo, pointing at the maintainer's server)
 
 ## Name
@@ -70,7 +70,7 @@ No separate config to set on the mod side.
 
 ## Source and license
 
-- Repo: <https://github.com/coilysiren/eco-jobs-tracker>
+- Repo: <https://github.com/coilyco-flight-deck/eco-jobs-tracker>
 - License: MIT
 - Issues / feature requests: GitHub issues on the repo.
 

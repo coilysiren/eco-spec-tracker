@@ -190,7 +190,7 @@ wheels = [
 [[package]]
 name = "eco-mcp-app"
 version = "0.1.0"
-source = { git = "https://github.com/coilysiren/eco-mcp-app.git?rev=7c6584b8f2eeaadcca0878230848c1da6c8ca2d9#7c6584b8f2eeaadcca0878230848c1da6c8ca2d9" }
+source = { git = "https://github.com/coilyco-flight-deck/eco-mcp-app.git?rev=7c6584b8f2eeaadcca0878230848c1da6c8ca2d9#7c6584b8f2eeaadcca0878230848c1da6c8ca2d9" }
 dependencies = [
     { name = "fastapi" },
     { name = "httpx" },
@@ -227,7 +227,7 @@ dev = [
 
 [package.metadata]
 requires-dist = [
-    { name = "eco-mcp-app", git = "https://github.com/coilysiren/eco-mcp-app.git?rev=7c6584b8f2eeaadcca0878230848c1da6c8ca2d9" },
+    { name = "eco-mcp-app", git = "https://github.com/coilyco-flight-deck/eco-mcp-app.git?rev=7c6584b8f2eeaadcca0878230848c1da6c8ca2d9" },
     { name = "fastapi", specifier = ">=0.115.0" },
     { name = "httpx", specifier = ">=0.28.0" },
     { name = "jinja2", specifier = ">=3.1.0" },
