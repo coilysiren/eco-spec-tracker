@@ -66,9 +66,9 @@ MIT. Eco is a trademark of **Strange Loop Games** [5]; unofficial fan tool, not 
 ## References
 
 1. <https://play.eco/>
-2. <https://github.com/coilysiren/eco-mcp-app>
+2. <https://github.com/coilyco-flight-deck/eco-mcp-app>
 3. <https://github.com/StrangeLoopGames/EcoModKit>
-4. <https://github.com/coilysiren/backend>
+4. <https://github.com/coilyco-flight-deck/backend>
 5. <https://www.strangeloopgames.com/>
 
 ## See also
@@ -77,4 +77,4 @@ MIT. Eco is a trademark of **Strange Loop Games** [5]; unofficial fan tool, not 
 - [docs/FEATURES.md](docs/FEATURES.md) - inventory of what ships today.
 - [.coily/coily.yaml](.coily/coily.yaml) - allowlisted commands.
 
-Cross-reference convention from [coilysiren/agentic-os#59](https://github.com/coilysiren/agentic-os/issues/59).
+Cross-reference convention from [coilysiren/agentic-os#59](https://github.com/coilyco-flight-deck/agentic-os/issues/59).
