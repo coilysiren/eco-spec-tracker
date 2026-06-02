@@ -2,10 +2,10 @@ DEFAULT_GOAL := help
 
 .PHONY: deploy run-native run-docker build-native build-docker publish test lint format precommit
 
-dns-name ?= $(shell cat config.yml | yq e '.dns-name')
-email ?= $(shell cat config.yml | yq e '.email')
-name ?= $(shell cat config.yml | yq e '.name')
-port ?= $(shell cat config.yml | yq e '.port')
+dns-name ?= $(shell cat coily.yaml | yq e '.dns-name')
+email ?= $(shell cat coily.yaml | yq e '.email')
+name ?= $(shell cat coily.yaml | yq e '.name')
+port ?= $(shell cat coily.yaml | yq e '.port')
 name-dashed ?= $(subst /,-,$(name))
 git-hash ?= $(shell git rev-parse HEAD 2>/dev/null || echo dev)
 # Fully-qualified ref into the in-cluster registry. Forgejo Actions builds

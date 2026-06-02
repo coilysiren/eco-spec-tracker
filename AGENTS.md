@@ -21,7 +21,7 @@ C# mod (`mod/`):
 - `shell/` - standalone ASP.NET harness on `:5100`, same route, canned data.
 - `src/Dtos.cs` - shared DTO records, `<Compile Include>`-linked into the shell.
 
-Deploy rig (cloned from `coilysiren/backend`): `Makefile`, `Dockerfile`, `config.yml`, `deploy/main.yml`, GHA workflow.
+Deploy rig (cloned from `coilysiren/backend`): `Makefile`, `Dockerfile`, `coily.yaml`, `deploy/main.yml`, GHA workflow.
 
 ## Repo boundaries
 
@@ -44,7 +44,7 @@ Run `coily exec precommit` (ruff + mypy + `dotnet format` + agentic-os checks) a
 
 ## Safety
 
-Do not change `config.yml`'s `name` - it cascades into every k8s resource and the image tag. The mod uses only the public ModKit API (`Eco.ReferenceAssemblies` NuGet). Do not copy from any local Eco source checkout.
+Do not change `coily.yaml`'s `name` - it cascades into every k8s resource and the image tag. The mod uses only the public ModKit API (`Eco.ReferenceAssemblies` NuGet). Do not copy from any local Eco source checkout.
 
 ## Cross-repo contracts
 

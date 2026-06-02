@@ -1,6 +1,6 @@
 # eco-jobs-tracker
 
-> **Naming.** `eco-jobs-tracker` is the canonical name (repo, subdomain `eco-jobs-tracker.coilysiren.me`, mod `EcoJobsTracker`). Deploy internals still carry the old `eco-spec-tracker` name (k8s namespace, Python package, image, SSM key, Sentry project). Renaming those is a separate, riskier surgery (k8s teardown + Sentry break). **Do not change `config.yml`'s `name`** - it cascades into every k8s resource and the image tag at deploy.
+> **Naming.** `eco-jobs-tracker` is the canonical name (repo, subdomain `eco-jobs-tracker.coilysiren.me`, mod `EcoJobsTracker`). Deploy internals still carry the old `eco-spec-tracker` name (k8s namespace, Python package, image, SSM key, Sentry project). Renaming those is a separate, riskier surgery (k8s teardown + Sentry break). **Do not change `coily.yaml`'s `name`** - it cascades into every k8s resource and the image tag at deploy.
 
 Read-only "who can make what" board for an **Eco** [1] server in 300 lines of FastAPI. Lists every player, profession, learned specialty, with live `active / total` counts.
 
