@@ -1,0 +1,60 @@
+# Per-repo command allowlist for eco-jobs-tracker. Coily is the canonical
+# entry point for dev verbs here; each command below delegates to a Make
+# target. Operators (human or agent) type `coily <verb>`, not `make <target>`.
+# The lockdown denies bare uv/make/python invocations.
+#
+# Names follow coily's [a-z0-9-] rule. Argv validation rejects shell
+# metacharacters at invocation time, so flags forward verbatim through
+# coily's user-extras mechanism.
+
+commands:
+  build-native:
+    run: make build-native
+    description: uv lock + uv sync.
+  build-docker:
+    run: make build-docker
+    description: Build the docker image locally with BuildKit cache.
+  publish:
+    run: make publish
+    description: Tag and push the docker image to ghcr.io.
+  run-native:
+    run: make run-native
+    description: Run the FastAPI server with autoreload + livereload on port 4100.
+  run-docker:
+    run: make run-docker
+    description: Run the published container locally on port 4100.
+  run-shell:
+    run: make run-shell
+    description: Run the C# shell harness on :5100 (same API shape as the real Eco mod).
+  build-mod:
+    run: make build-mod
+    description: Build the real Eco mod DLL (drops in mod/src/bin/Release/net10.0/).
+  format-cs:
+    run: make format-cs
+    description: Verify C# formatting (dotnet format).
+  test:
+    run: make test
+    description: Run the pytest smoke suite.
+  lint:
+    run: make lint
+    description: ruff check + ruff format --check + mypy on src/ and tests/.
+  format:
+    run: make format
+    description: Apply ruff fixes and formatting in place.
+  precommit:
+    run: make precommit
+    description: Run all pre-commit hooks against every file.
+
+# Catalog metadata for the cross-repo knowledge graph.
+# Schema: coilysiren/agentic-os-kai#420 (tracker).
+catalog:
+  kind: Component
+  type: service
+  system: eco
+  owner: kai
+  lifecycle: production
+  description: "Per-player who-can-make-what board for an Eco server. FastAPI + Jinja2 + HTMX, paired with a C# ModKit mod."
+  dependsOn:
+    - forgejo.coilysiren.me/coilysiren/backend
+    - forgejo.coilysiren.me/coilysiren/eco-mods-public
+    - forgejo.coilysiren.me/coilysiren/infrastructure
