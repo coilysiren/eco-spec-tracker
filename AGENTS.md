@@ -29,18 +29,18 @@ This repo is the canonical reference for the current deploy shape - other repos 
 
 ## Commands
 
-Route dev verbs through `coily`, which reads [.coily/coily.yaml](.coily/coily.yaml):
+Route dev verbs through `ward`, which reads [.ward/ward.yaml](.ward/ward.yaml) (run verbs with `ward exec <verb>`):
 
-- `coily exec build-native` / `run-native` - uv sync, uvicorn `:4100` with reload.
-- `coily exec run-shell` - C# harness on `:5100`.
-- `coily exec build-mod` - compile the real mod DLL.
-- `coily exec build-docker` / `publish` - build the image, push to GHCR.
+- `ward exec build-native` / `run-native` - uv sync, uvicorn `:4100` with reload.
+- `ward exec run-shell` - C# harness on `:5100`.
+- `ward exec build-mod` - compile the real mod DLL.
+- `ward exec build-docker` / `publish` - build the image, push to GHCR.
 
 GHA (`build-and-publish.yml`) runs tests and publishes the image on push to `main`. The k3s rollout is the Makefile `deploy` target (`publish` + apply + rollout), not a CI job. `UPSTREAM_URL` selects whether FastAPI reads `mock_data.py` or pulls from shell/mod.
 
 ## Validation
 
-Run `coily exec precommit` (ruff + mypy + `dotnet format` + agentic-os checks) and `coily exec test` before pushing. Run tests, linters, and builds without asking. Fix failures. Never use `--no-verify`.
+Run `ward exec precommit` (ruff + mypy + `dotnet format` + agentic-os checks) and `ward exec test` before pushing. Run tests, linters, and builds without asking. Fix failures. Never use `--no-verify`.
 
 ## Safety
 
@@ -64,6 +64,6 @@ Commit to main directly, push after each commit, no PRs unless asked.
 
 - [README.md](README.md) - human-facing intro.
 - [docs/FEATURES.md](docs/FEATURES.md) - inventory of what ships today.
-- [.coily/coily.yaml](.coily/coily.yaml) - allowlisted commands.
+- [.ward/ward.yaml](.ward/ward.yaml) - allowlisted commands (`ward exec`). ([.coily/coily.yaml](.coily/coily.yaml) retained during the .coily -> .ward migration window.)
 
 Cross-reference convention from [coilysiren/agentic-os#59](https://github.com/coilyco-flight-deck/agentic-os/issues/59).
